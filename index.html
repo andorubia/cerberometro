@@ -54,31 +54,31 @@
       display: block;
     }
 
-    /* Bloque contenedor centrado totalmente y sin límites de ancho */
+    /* Bloque contenedor centrado horizontalmente y un poco más arriba */
     .texto-inicio {
       position: absolute;
-      top: 50%;
+      top: 35%; /* <-- Cambiado de 50% a 35% para elevar la posición */
       left: 50%;
-      transform: translate(-50%, -50%); /* Centrado vertical y horizontal perfecto */
+      transform: translate(-50%, -50%);
       z-index: 10;
-      width: max-content; /* Se ajusta al ancho real de la línea más larga */
-      max-width: none; /* Elimina cualquier restricción de ancho */
+      width: max-content;
+      max-width: none;
       text-align: center;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85); /* Sombras para asegurar legibilidad */
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
       display: flex;
       flex-direction: column;
       align-items: center;
-      white-space: nowrap; /* Evita que las frases se rompan en varios renglones */
+      white-space: nowrap;
     }
 
     .texto-inicio h2 {
-      font-size: 42px;
+      font-size: 50px;
       margin-bottom: 16px;
       color: #ffffff;
     }
 
     .texto-inicio p {
-      font-size: 20px;
+      font-size: 28px;
       line-height: 1.5;
       margin-bottom: 12px;
       color: #ffffff;
@@ -100,7 +100,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      text-shadow: none; /* Quita la sombra de texto para el botón */
+      text-shadow: none;
     }
 
     .btn-play:hover {
@@ -150,96 +150,4 @@
         <p>Mantengamos el silencio para no despertar a la bestia.</p>
 
         <button id="btn-comenzar" class="btn-play">
-          ▶ Iniciar monitor de ruido
-        </button>
-      </div>
-    </div>
-
-    <div id="pantalla-juego">
-      <div class="contenedor-cerbero">
-        <img id="imagen-cerbero" src="cerbero1.jpg" alt="Cerbero durmiendo">
-      </div>
-
-      <div id="medidor-volumen">
-        <div id="barra-nivel"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <script>
-    const btnComenzar = document.getElementById('btn-comenzar');
-    const pantallaInicio = document.getElementById('pantalla-inicio');
-    const pantallaJuego = document.getElementById('pantalla-juego');
-    const imgCerbero = document.getElementById('imagen-cerbero');
-    const barraNivel = document.getElementById('barra-nivel');
-
-    const imagenes = {
-      nivel1: 'cerbero1.jpg',
-      nivel2: 'cerbero2.jpg',
-      nivel3: 'cerbero3.jpg',
-      nivel4: 'cerbero4.jpg'
-    };
-
-    let audioContext;
-    let analyser;
-    let microphone;
-
-    btnComenzar.addEventListener('click', async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        microphone = audioContext.createMediaStreamSource(stream);
-
-        analyser.fftSize = 256;
-        microphone.connect(analyser);
-
-        pantallaInicio.style.display = 'none';
-        pantallaJuego.style.display = 'block';
-
-        procesarAudio();
-      } catch (err) {
-        alert('Debes permitir el acceso al micrófono para activar el Cerberómetro.');
-      }
-    });
-
-    function procesarAudio() {
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      
-      function actualizar() {
-        analyser.getByteFrequencyData(dataArray);
-
-        let suma = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          suma += dataArray[i];
-        }
-        let promedio = suma / dataArray.length;
-        
-        let volumen = Math.min(100, Math.round((promedio / 128) * 100));
-
-        barraNivel.style.width = volumen + '%';
-
-        if (volumen < 20) {
-          imgCerbero.src = imagenes.nivel1;
-          barraNivel.style.backgroundColor = '#4caf50';
-        } else if (volumen < 45) {
-          imgCerbero.src = imagenes.nivel2;
-          barraNivel.style.backgroundColor = '#ffeb3b';
-        } else if (volumen < 70) {
-          imgCerbero.src = imagenes.nivel3;
-          barraNivel.style.backgroundColor = '#ff9800';
-        } else {
-          imgCerbero.src = imagenes.nivel4;
-          barraNivel.style.backgroundColor = '#f44336';
-        }
-
-        requestAnimationFrame(actualizar);
-      }
-
-      actualizar();
-    }
-  </script>
-</body>
-</html>
+          ▶ Iniciar
