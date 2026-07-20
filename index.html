@@ -54,6 +54,7 @@
       display: block;
     }
 
+    /* Bloque contenedor centrado horizontalmente y un poco más arriba */
     .texto-inicio {
       position: absolute;
       top: 35%;
@@ -71,25 +72,27 @@
     }
 
     .texto-inicio h2 {
-      font-size: 62px;
+      font-size: 50px;
       margin-bottom: 16px;
       color: #ffffff;
     }
 
     .texto-inicio p {
-      font-size: 26px;
+      font-size: 28px;
       line-height: 1.5;
       margin-bottom: 12px;
       color: #ffffff;
     }
 
+    /* Botón colocado directamente debajo del texto */
     .btn-play {
+      font-family: inherit;
       margin-top: 24px;
       padding: 16px 36px;
-      font-size: 26px;
+      font-size: 20px;
       font-weight: bold;
-      color: #512A6D;
-      background-color: #ffffff;
+      color: #000000;
+      background-color: #71F0F5;
       border: none;
       border-radius: 50px;
       cursor: pointer;
@@ -102,7 +105,7 @@
     }
 
     .btn-play:hover {
-      background-color: #ffffff;
+      background-color: #4ee3e9;
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(113, 240, 245, 0.6);
     }
@@ -111,6 +114,107 @@
       transform: translateY(1px);
     }
 
+    /* --- CAJA DEL TEMPORIZADOR (ESQUINA SUPERIOR IZQUIERDA) --- */
+    .caja-temporizador {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 16px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-width: 200px;
+    }
+
+    .caja-temporizador h3 {
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #71F0F5;
+    }
+
+    .inputs-tiempo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .inputs-tiempo input {
+      width: 55px;
+      padding: 6px;
+      font-size: 18px;
+      font-family: inherit;
+      font-weight: bold;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: #ffffff;
+      outline: none;
+    }
+
+    .inputs-tiempo input:focus {
+      border-color: #71F0F5;
+    }
+
+    .inputs-tiempo span {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .pantalla-tiempo {
+      font-size: 36px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #ffffff;
+    }
+
+    .botones-temporizador {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-temp {
+      font-family: inherit;
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-temp-iniciar {
+      background-color: #71F0F5;
+      color: #000000;
+    }
+
+    .btn-temp-iniciar:hover {
+      background-color: #4ee3e9;
+    }
+
+    .btn-temp-reiniciar {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .btn-temp-reiniciar:hover {
+      background-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .btn-temp:active {
+      transform: scale(0.95);
+    }
+
+    /* Barra de volumen flotante en la parte inferior */
     #medidor-volumen {
       position: absolute;
       bottom: 20px;
@@ -153,6 +257,23 @@
     </div>
 
     <div id="pantalla-juego">
+      <div class="caja-temporizador">
+        <h3>Temporizador</h3>
+        
+        <div class="inputs-tiempo" id="contenedor-inputs">
+          <input type="number" id="input-minutos" placeholder="Min" min="0" max="99" value="05">
+          <span>:</span>
+          <input type="number" id="input-segundos" placeholder="Seg" min="0" max="59" value="00">
+        </div>
+
+        <div class="pantalla-tiempo" id="pantalla-tiempo" style="display: none;">05:00</div>
+
+        <div class="botones-temporizador">
+          <button id="btn-timer-toggle" class="btn-temp btn-temp-iniciar">Iniciar</button>
+          <button id="btn-timer-reset" class="btn-temp btn-temp-reiniciar">Reiniciar</button>
+        </div>
+      </div>
+
       <div class="contenedor-cerbero">
         <img id="imagen-cerbero" src="cerbero1.jpg" alt="Cerbero durmiendo">
       </div>
@@ -170,6 +291,18 @@
     const pantallaJuego = document.getElementById('pantalla-juego');
     const imgCerbero = document.getElementById('imagen-cerbero');
     const barraNivel = document.getElementById('barra-nivel');
+
+    // Elementos del temporizador
+    const inputMinutos = document.getElementById('input-minutos');
+    const inputSegundos = document.getElementById('input-segundos');
+    const pantallaTiempo = document.getElementById('pantalla-tiempo');
+    const contenedorInputs = document.getElementById('contenedor-inputs');
+    const btnTimerToggle = document.getElementById('btn-timer-toggle');
+    const btnTimerReset = document.getElementById('btn-timer-reset');
+
+    let temporizadorInterval = null;
+    let tiempoRestante = 0;
+    let temporizadorEnEjecucion = false;
 
     const imagenes = {
       nivel1: 'cerbero1.jpg',
@@ -202,6 +335,60 @@
       }
     });
 
+    // --- LÓGICA DEL TEMPORIZADOR ---
+    function formatearTiempo(segundosTotales) {
+      const min = Math.floor(segundosTotales / 60);
+      const seg = segundosTotales % 60;
+      return `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
+    }
+
+    btnTimerToggle.addEventListener('click', () => {
+      if (temporizadorEnEjecucion) {
+        // Pausar
+        clearInterval(temporizadorInterval);
+        temporizadorEnEjecucion = false;
+        btnTimerToggle.textContent = 'Continuar';
+      } else {
+        // Iniciar o reanudar
+        if (pantallaTiempo.style.display === 'none') {
+          const min = parseInt(inputMinutos.value) || 0;
+          const seg = parseInt(inputSegundos.value) || 0;
+          tiempoRestante = min * 60 + seg;
+          
+          if (tiempoRestante <= 0) return;
+
+          contenedorInputs.style.display = 'none';
+          pantallaTiempo.style.display = 'block';
+        }
+
+        pantallaTiempo.textContent = formatearTiempo(tiempoRestante);
+        temporizadorEnEjecucion = true;
+        btnTimerToggle.textContent = 'Pausar';
+
+        temporizadorInterval = setInterval(() => {
+          tiempoRestante--;
+          pantallaTiempo.textContent = formatearTiempo(tiempoRestante);
+
+          if (tiempoRestante <= 0) {
+            clearInterval(temporizadorInterval);
+            temporizadorEnEjecucion = false;
+            btnTimerToggle.textContent = 'Iniciar';
+            alert('¡El tiempo ha terminado!');
+          }
+        }, 1000);
+      }
+    });
+
+    btnTimerReset.addEventListener('click', () => {
+      clearInterval(temporizadorInterval);
+      temporizadorEnEjecucion = false;
+      
+      contenedorInputs.style.display = 'flex';
+      pantallaTiempo.style.display = 'none';
+      btnTimerToggle.textContent = 'Iniciar';
+    });
+
+    // --- PROCESAMIENTO DE AUDIO ---
     function procesarAudio() {
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       
