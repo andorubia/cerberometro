@@ -194,10 +194,10 @@
       border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-      display: flex;
+      display: none; /* Inicialmente oculta hasta fijar objetivo */
       flex-direction: column;
       gap: 12px;
-      width: 320px;
+      width: 340px;
     }
 
     .control-grupo {
@@ -207,10 +207,9 @@
     }
 
     .etiqueta-control {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: bold;
       color: #40EEFE;
-      text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
@@ -221,7 +220,7 @@
     }
 
     .control-sensibilidad span {
-      font-size: 12px;
+      font-size: 14px;
       color: #aaaaaa;
     }
 
@@ -255,10 +254,10 @@
 
     .btn-ruido {
       flex: 1;
-      padding: 8px 12px;
-      font-size: 14px;
+      padding: 10px 16px;
+      font-size: 18px;
       font-weight: bold;
-      border-radius: 15px;
+      border-radius: 25px;
       border: none;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -432,7 +431,7 @@
         </div>
       </div>
 
-      <div class="caja-ruido">
+      <div class="caja-ruido" id="caja-ruido">
         <div class="control-grupo">
           <span class="etiqueta-control">Sensibilidad del micrófono</span>
           <div class="control-sensibilidad">
@@ -490,6 +489,7 @@
     const imgCerbero = document.getElementById('imagen-cerbero');
     const barraNivel = document.getElementById('barra-nivel');
     const sliderSensibilidad = document.getElementById('slider-sensibilidad');
+    const cajaRuido = document.getElementById('caja-ruido');
 
     // Elementos del temporizador
     const textoTiempo = document.getElementById('texto-tiempo');
@@ -577,6 +577,9 @@
       btnDetener.textContent = "Detener";
       btnFijarObjetivo.textContent = "🞋 Nuevo objetivo";
 
+      // Mostrar la caja de control de ruido al iniciar un objetivo
+      cajaRuido.style.display = 'flex';
+
       iniciarCuentaRegresiva();
     });
 
@@ -622,6 +625,9 @@
       btnDetener.textContent = "Detener";
       btnFijarObjetivo.textContent = "🞋 Fijar objetivo";
       
+      // Ocultar caja de ruido al reiniciar
+      cajaRuido.style.display = 'none';
+
       opcionesTiempo.forEach(b => b.classList.remove('activo'));
     }
 
