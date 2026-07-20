@@ -54,7 +54,6 @@
       display: block;
     }
 
-    /* Bloque contenedor centrado horizontalmente y un poco más arriba */
     .texto-inicio {
       position: absolute;
       top: 35%;
@@ -84,7 +83,6 @@
       color: #ffffff;
     }
 
-    /* Botón colocado directamente debajo del texto */
     .btn-play {
       font-family: inherit;
       margin-top: 24px;
@@ -114,7 +112,7 @@
       transform: translateY(1px);
     }
 
-    /* --- CAJA DEL TEMPORIZADOR (ESQUINA SUPERIOR IZQUIERDA) --- */
+    /* --- CAJA DEL TEMPORIZADOR --- */
     .caja-temporizador {
       position: absolute;
       top: 20px;
@@ -182,7 +180,14 @@
       transform: scale(0.95);
     }
 
-    /* --- CAJA DE CONTROL DE RUIDO (ESQUINA SUPERIOR DERECHA) --- */
+    /* Estilo para la imagen PNG dentro del botón */
+    .icono-btn {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    /* --- CAJA DE CONTROL DE RUIDO --- */
     .caja-ruido {
       position: absolute;
       top: 20px;
@@ -194,7 +199,7 @@
       border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-      display: none; /* Inicialmente oculta hasta fijar objetivo */
+      display: none;
       flex-direction: column;
       gap: 12px;
       width: 340px;
@@ -281,7 +286,7 @@
       background-color: rgba(255, 255, 255, 0.35);
     }
 
-    /* --- MODAL DE OBJETIVO DE TIEMPO --- */
+    /* --- MODAL --- */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -359,7 +364,6 @@
       border-color: #40EEFE;
     }
 
-    /* Alineación a la derecha para las acciones del modal */
     .acciones-modal {
       display: flex;
       gap: 12px;
@@ -427,7 +431,9 @@
         </div>
 
         <div class="botones-temporizador">
-          <button id="btn-fijar-objetivo" class="btn-temp btn-temp-fijar">🞋 Fijar objetivo</button>
+          <button id="btn-fijar-objetivo" class="btn-temp btn-temp-fijar">
+            <img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Fijar objetivo
+          </button>
         </div>
       </div>
 
@@ -491,13 +497,11 @@
     const sliderSensibilidad = document.getElementById('slider-sensibilidad');
     const cajaRuido = document.getElementById('caja-ruido');
 
-    // Elementos del temporizador
     const textoTiempo = document.getElementById('texto-tiempo');
     const btnFijarObjetivo = document.getElementById('btn-fijar-objetivo');
     const btnDetener = document.getElementById('btn-detener');
     const btnReiniciarTop = document.getElementById('btn-reiniciar-top');
 
-    // Elementos del Modal
     const modalObjetivo = document.getElementById('modal-objetivo');
     const btnModalCancelar = document.getElementById('btn-modal-cancelar');
     const btnModalIniciar = document.getElementById('btn-modal-iniciar');
@@ -575,9 +579,10 @@
       temporizadorActivo = true;
       enPausa = false;
       btnDetener.textContent = "Detener";
-      btnFijarObjetivo.textContent = "🞋 Nuevo objetivo";
+      
+      // Actualiza manteniendo la imagen PNG
+      btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Nuevo objetivo';
 
-      // Mostrar la caja de control de ruido al iniciar un objetivo
       cajaRuido.style.display = 'flex';
 
       iniciarCuentaRegresiva();
@@ -599,7 +604,6 @@
       }, 1000);
     }
 
-    // Botón Detener / Reanudar
     btnDetener.addEventListener('click', () => {
       if (!temporizadorActivo) return;
 
@@ -611,7 +615,6 @@
       }
     });
 
-    // Botón Reiniciar
     function reiniciarTemporizador() {
       clearInterval(temporizadorInterval);
       tiempoRestante = 0;
@@ -623,9 +626,10 @@
       imgCerbero.src = imagenes.nivel1;
       barraNivel.style.width = '0%';
       btnDetener.textContent = "Detener";
-      btnFijarObjetivo.textContent = "🞋 Fijar objetivo";
       
-      // Ocultar caja de ruido al reiniciar
+      // Restablece el texto con la imagen PNG
+      btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Fijar objetivo';
+      
       cajaRuido.style.display = 'none';
 
       opcionesTiempo.forEach(b => b.classList.remove('activo'));
@@ -633,7 +637,6 @@
 
     btnReiniciarTop.addEventListener('click', reiniciarTemporizador);
 
-    // Detección y procesamiento de audio
     function procesarAudio() {
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       
