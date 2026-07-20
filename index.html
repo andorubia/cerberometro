@@ -96,7 +96,7 @@
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(113, 240, 245, 0.4);
+      box-shadow: 0 4px 15px rgba(64, 238, 254, 0.4);
       transition: all 0.3s ease;
       display: inline-flex;
       align-items: center;
@@ -107,7 +107,7 @@
     .btn-play:hover {
       background-color: #ffffff;
       transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(113, 240, 245, 0.6);
+      box-shadow: 0 6px 20px rgba(64, 238, 254, 0.6);
     }
 
     .btn-play:active {
@@ -163,15 +163,19 @@
       border-radius: 20px;
       cursor: pointer;
       transition: background-color 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     .btn-temp-fijar {
-      background-color: #71F0F5;
+      background-color: #40EEFE;
       color: #000000;
     }
 
     .btn-temp-fijar:hover {
-      background-color: #4ee3e9;
+      background-color: #2bd8ea;
     }
 
     .btn-temp-reiniciar {
@@ -219,7 +223,7 @@
 
     .modal-contenido h2 {
       font-size: 26px;
-      color: #71F0F5;
+      color: #40EEFE;
     }
 
     .modal-contenido p {
@@ -250,14 +254,14 @@
     }
 
     .btn-opcion-tiempo:hover {
-      background: rgba(113, 240, 245, 0.2);
-      border-color: #71F0F5;
+      background: rgba(64, 238, 254, 0.2);
+      border-color: #40EEFE;
     }
 
     .btn-opcion-tiempo.activo {
-      background: #71F0F5;
+      background: #40EEFE;
       color: #000000;
-      border-color: #71F0F5;
+      border-color: #40EEFE;
     }
 
     .acciones-modal {
@@ -288,13 +292,13 @@
     }
 
     .btn-iniciar-modal {
-      background: #71F0F5;
+      background: #40EEFE;
       color: #000000;
     }
 
     .btn-iniciar-modal:hover {
-      background: #4ee3e9;
-      box-shadow: 0 4px 15px rgba(113, 240, 245, 0.4);
+      background: #2bd8ea;
+      box-shadow: 0 4px 15px rgba(64, 238, 254, 0.4);
     }
 
     /* Barra de volumen flotante en la parte inferior */
@@ -347,7 +351,7 @@
         </div>
 
         <div class="botones-temporizador">
-          <button id="btn-fijar-objetivo" class="btn-temp btn-temp-fijar">Fijar objetivo</button>
+          <button id="btn-fijar-objetivo" class="btn-temp btn-temp-fijar">🞋 Fijar objetivo</button>
           <button id="btn-timer-reset" class="btn-temp btn-temp-reiniciar" style="display: none;">Reiniciar</button>
         </div>
       </div>
@@ -478,7 +482,7 @@
       temporizadorActivo = true;
 
       btnFijarObjetivo.style.display = 'none';
-      btnTimerReset.style.display = 'inline-block';
+      btnTimerReset.style.display = 'inline-flex';
 
       clearInterval(temporizadorInterval);
       temporizadorInterval = setInterval(() => {
@@ -505,7 +509,7 @@
       barraNivel.style.width = '0%';
       
       opcionesTiempo.forEach(b => b.classList.remove('activo'));
-      btnFijarObjetivo.style.display = 'inline-block';
+      btnFijarObjetivo.style.display = 'inline-flex';
       btnTimerReset.style.display = 'none';
     }
 
