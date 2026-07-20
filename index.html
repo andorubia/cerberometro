@@ -140,7 +140,13 @@
       color: #ffffff;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+    }
+
+    .icono-reloj {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
     }
 
     .botones-temporizador {
@@ -335,7 +341,10 @@
 
     <div id="pantalla-juego">
       <div class="caja-temporizador">
-        <div class="pantalla-tiempo" id="pantalla-tiempo">🕔 00:00</div>
+        <div class="pantalla-tiempo">
+          <img src="icono-reloj.png" alt="Reloj" class="icono-reloj">
+          <span id="texto-tiempo">00:00</span>
+        </div>
 
         <div class="botones-temporizador">
           <button id="btn-fijar-objetivo" class="btn-temp btn-temp-fijar">Fijar objetivo</button>
@@ -383,7 +392,7 @@
     const barraNivel = document.getElementById('barra-nivel');
 
     // Elementos del temporizador
-    const pantallaTiempo = document.getElementById('pantalla-tiempo');
+    const textoTiempo = document.getElementById('texto-tiempo');
     const btnFijarObjetivo = document.getElementById('btn-fijar-objetivo');
     const btnTimerReset = document.getElementById('btn-timer-reset');
 
@@ -396,7 +405,7 @@
     let temporizadorInterval = null;
     let tiempoRestante = 0;
     let minutosSeleccionados = 0;
-    let temporizadorActivo = false; // Controla si el temporizador ya comenzó
+    let temporizadorActivo = false;
 
     const imagenes = {
       nivel1: 'cerbero1.jpg',
@@ -410,11 +419,9 @@
     let microphone;
 
     btnComenzar.addEventListener('click', async () => {
-      // Oculta inicio y muestra juego inmediatamente
       pantallaInicio.style.display = 'none';
       pantallaJuego.style.display = 'block';
 
-      // Intenta activar micrófono
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
@@ -435,7 +442,7 @@
     function formatearTiempo(segundosTotales) {
       const min = Math.floor(segundosTotales / 60);
       const seg = segundosTotales % 60;
-      return `🕔 ${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
+      return `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
     }
 
     // Abrir Modal
@@ -465,21 +472,18 @@
       }
 
       tiempoRestante = minutosSeleccionados * 60;
-      pantallaTiempo.textContent = formatearTiempo(tiempoRestante);
+      textoTiempo.textContent = formatearTiempo(tiempoRestante);
       modalObjetivo.style.display = 'none';
 
-      // Activar la detección de ruido
       temporizadorActivo = true;
 
-      // Alternar botones
       btnFijarObjetivo.style.display = 'none';
       btnTimerReset.style.display = 'inline-block';
 
-      // Iniciar cuenta regresiva
       clearInterval(temporizadorInterval);
       temporizadorInterval = setInterval(() => {
         tiempoRestante--;
-        pantallaTiempo.textContent = formatearTiempo(tiempoRestante);
+        textoTiempo.textContent = formatearTiempo(tiempoRestante);
 
         if (tiempoRestante <= 0) {
           clearInterval(temporizadorInterval);
@@ -494,11 +498,11 @@
       clearInterval(temporizadorInterval);
       tiempoRestante = 0;
       minutosSeleccionados = 0;
-      temporizadorActivo = false; // Desactivar la detección de ruido
+      temporizadorActivo = false;
       
-      pantallaTiempo.textContent = '🕔 00:00';
-      imgCerbero.src = imagenes.nivel1; // Regresa a Cerbero descansando
-      barraNivel.style.width = '0%'; // Vacía la barra de nivel
+      textoTiempo.textContent = '00:00';
+      imgCerbero.src = imagenes.nivel1;
+      barraNivel.style.width = '0%';
       
       opcionesTiempo.forEach(b => b.classList.remove('activo'));
       btnFijarObjetivo.style.display = 'inline-block';
@@ -514,7 +518,6 @@
       function actualizar() {
         if (!analyser) return;
 
-        // Si el temporizador no se ha iniciado, no reacciona al sonido
         if (!temporizadorActivo) {
           barraNivel.style.width = '0%';
           imgCerbero.src = imagenes.nivel1;
