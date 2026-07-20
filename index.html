@@ -406,6 +406,11 @@
     let microphone;
 
     btnComenzar.addEventListener('click', async () => {
+      // Oculta inicio y muestra juego inmediatamente
+      pantallaInicio.style.display = 'none';
+      pantallaJuego.style.display = 'block';
+
+      // Intenta activar micrófono
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
@@ -416,12 +421,9 @@
         analyser.fftSize = 256;
         microphone.connect(analyser);
 
-        pantallaInicio.style.display = 'none';
-        pantallaJuego.style.display = 'block';
-
         procesarAudio();
       } catch (err) {
-        alert('Debes permitir el acceso al micrófono para activar el Cerberómetro.');
+        alert('Debes permitir el acceso al micrófono para activar la detección de ruido.');
       }
     });
 
@@ -485,3 +487,53 @@
       clearInterval(temporizadorInterval);
       tiempoRestante = 0;
       minutosSeleccionados = 0;
+      pantallaTiempo.textContent = '00:00';
+      
+      opcionesTiempo.forEach(b => b.classList.remove('activo'));
+      btnFijarObjetivo.style.display = 'inline-block';
+      btnTimerReset.style.display = 'none';
+    }
+
+    btnTimerReset.addEventListener('click', reiniciarTemporizador);
+
+    // --- PROCESAMIENTO DE AUDIO ---
+    function procesarAudio() {
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      
+      function actualizar() {
+        if (!analyser) return;
+
+        analyser.getByteFrequencyData(dataArray);
+
+        let suma = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          suma += dataArray[i];
+        }
+        let promedio = suma / dataArray.length;
+        
+        let volumen = Math.min(100, Math.round((promedio / 128) * 100));
+
+        barraNivel.style.width = volumen + '%';
+
+        if (volumen < 20) {
+          imgCerbero.src = imagenes.nivel1;
+          barraNivel.style.backgroundColor = '#4caf50';
+        } else if (volumen < 45) {
+          imgCerbero.src = imagenes.nivel2;
+          barraNivel.style.backgroundColor = '#ffeb3b';
+        } else if (volumen < 70) {
+          imgCerbero.src = imagenes.nivel3;
+          barraNivel.style.backgroundColor = '#ff9800';
+        } else {
+          imgCerbero.src = imagenes.nivel4;
+          barraNivel.style.backgroundColor = '#f44336';
+        }
+
+        requestAnimationFrame(actualizar);
+      }
+
+      actualizar();
+    }
+  </script>
+</body>
+</html>
