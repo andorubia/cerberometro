@@ -6,33 +6,61 @@
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
+      background-color: #000000;
       color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
     }
 
     .tarjeta {
-      background-color: #1e1e1e;
-      border: 2px solid #333;
-      border-radius: 20px;
-      padding: 40px;
-      max-width: 500px;
-      width: 100%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      width: 100vw;
+      height: 100vh;
+      position: relative;
     }
 
+    #pantalla-inicio, #pantalla-juego {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #pantalla-juego {
+      display: none;
+    }
+
+    .contenedor-cerbero {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .contenedor-cerbero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      display: block;
+    }
+
+    /* Botón flotante para la pantalla de inicio */
     .btn-play {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
       padding: 16px 36px;
       font-size: 20px;
       font-weight: bold;
@@ -41,53 +69,35 @@
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(230, 81, 0, 0.4);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
       transition: all 0.3s ease;
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      margin-top: 10px;
     }
 
     .btn-play:hover {
       background: linear-gradient(135deg, #ff8f00, #f57c00);
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(230, 81, 0, 0.6);
+      transform: translateX(-50%) translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
     }
 
     .btn-play:active {
-      transform: translateY(1px);
+      transform: translateX(-50%) translateY(1px);
     }
 
-    #pantalla-juego {
-      display: none;
-    }
-
-    .contenedor-cerbero {
-      width: 320px;
-      height: 320px;
-      margin: 20px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .contenedor-cerbero img {
-      max-width: 100%;
-      max-height: 100%;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      object-fit: cover;
-    }
-
+    /* Barra de volumen flotante en la parte inferior */
     #medidor-volumen {
-      width: 100%;
-      height: 22px;
-      background-color: #333;
-      border-radius: 11px;
+      position: absolute;
+      bottom: 20px;
+      left: 5%;
+      width: 90%;
+      height: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
       overflow: hidden;
-      margin-top: 20px;
-      border: 1px solid #444;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 10;
     }
 
     #barra-nivel {
