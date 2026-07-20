@@ -54,50 +54,39 @@
       display: block;
     }
 
-    /* Estilos para el bloque de texto descriptivo */
+    /* Bloque contenedor de texto y botón sin caja de fondo */
     .texto-inicio {
       position: absolute;
-      top: 25%;
+      top: 20%;
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
       width: 90%;
-      max-width: 600px;
+      max-width: 700px;
       text-align: center;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(5px);
-      padding: 24px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      /* Se eliminan el background, border, shadow y blur */
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); /* Garantiza la lectura sobre cualquier fondo */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .texto-inicio h2 {
-      font-size: 24px;
-      margin-bottom: 12px;
-      color: #71F0F5;
-    }
-
-    .texto-inicio p {
-      font-size: 16px;
-      line-height: 1.5;
-      margin-bottom: 8px;
-      color: #e0e0e0;
-    }
-
-    .texto-inicio p:last-child {
-      margin-bottom: 0;
-      font-weight: bold;
+      font-size: 42px;
+      margin-bottom: 16px;
       color: #ffffff;
     }
 
-    /* Botón flotante para la pantalla de inicio */
+    .texto-inicio p {
+      font-size: 20px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    /* Botón colocado directamente debajo del texto */
     .btn-play {
-      position: absolute;
-      bottom: 12%;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
+      margin-top: 24px;
       padding: 16px 36px;
       font-size: 20px;
       font-weight: bold;
@@ -111,16 +100,17 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
+      text-shadow: none; /* Evita heredar la sombra del texto */
     }
 
     .btn-play:hover {
       background-color: #4ee3e9;
-      transform: translateX(-50%) translateY(-3px);
+      transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(113, 240, 245, 0.6);
     }
 
     .btn-play:active {
-      transform: translateX(-50%) translateY(1px);
+      transform: translateY(1px);
     }
 
     /* Barra de volumen flotante en la parte inferior */
@@ -158,11 +148,11 @@
         <h2>Cerbero está cayendo en un profundo sueño...</h2>
         <p>El guardián del Inframundo ha estado vigilando las puertas todo el día y necesita echarse una siesta.</p>
         <p>Mantengamos el silencio para no despertar a la bestia.</p>
-      </div>
 
-      <button id="btn-comenzar" class="btn-play">
-        ▶ Iniciar monitor de ruido
-      </button>
+        <button id="btn-comenzar" class="btn-play">
+          ▶ Iniciar monitor de ruido
+        </button>
+      </div>
     </div>
 
     <div id="pantalla-juego">
