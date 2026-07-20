@@ -122,30 +122,31 @@
       z-index: 10;
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(8px);
-      padding: 16px 20px;
-      border-radius: 16px;
+      padding: 20px 24px;
+      border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      min-width: 220px;
+      gap: 14px;
+      min-width: 250px;
     }
 
+    /* Tamaño ampliado para los números del temporizador */
     .pantalla-tiempo {
-      font-size: 40px;
+      font-size: 56px;
       font-weight: bold;
       letter-spacing: 2px;
       color: #ffffff;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .icono-reloj {
-      width: 35px;
-      height: 35px;
+      width: 48px;
+      height: 48px;
       object-fit: contain;
     }
 
@@ -156,22 +157,23 @@
 
     .btn-temp {
       font-family: inherit;
-      padding: 8px 16px;
-      font-size: 14px;
-      font-weight: bold;
       border: none;
-      border-radius: 20px;
+      border-radius: 25px;
       cursor: pointer;
       transition: background-color 0.2s, transform 0.1s;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
     }
 
+    /* Tamaño ampliado para el botón "Fijar objetivo" y el símbolo 🞋 */
     .btn-temp-fijar {
       background-color: #40EEFE;
       color: #000000;
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      gap: 8px;
     }
 
     .btn-temp-fijar:hover {
@@ -181,6 +183,10 @@
     .btn-temp-reiniciar {
       background-color: rgba(255, 255, 255, 0.2);
       color: #ffffff;
+      padding: 10px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      gap: 6px;
     }
 
     .btn-temp-reiniciar:hover {
@@ -213,23 +219,28 @@
       padding: 30px 40px;
       width: 90%;
       max-width: 500px;
-      text-align: center;
+      text-align: left;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 20px;
+      align-items: flex-start;
+      gap: 12px;
     }
 
     .modal-contenido h2 {
-      font-size: 26px;
+      font-size: 20px;
       color: #40EEFE;
+      text-align: left;
+      width: 100%;
     }
 
     .modal-contenido p {
-      font-size: 16px;
+      font-size: 14px;
       color: #cccccc;
       line-height: 1.4;
+      text-align: left;
+      width: 100%;
+      margin-bottom: 8px;
     }
 
     .grid-opciones-tiempo {
@@ -269,6 +280,7 @@
       gap: 15px;
       width: 100%;
       justify-content: center;
+      margin-top: 8px;
     }
 
     .btn-modal {
