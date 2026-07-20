@@ -57,19 +57,19 @@
     /* Botón flotante para la pantalla de inicio */
     .btn-play {
       position: absolute;
-      bottom: 50px;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       z-index: 10;
       padding: 16px 36px;
       font-size: 20px;
       font-weight: bold;
-      color: #ffffff;
-      background: linear-gradient(135deg, #ff6f00, #e65100);
+      color: #000000;
+      background-color: #71F0F5;
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 4px 15px rgba(113, 240, 245, 0.4);
       transition: all 0.3s ease;
       display: inline-flex;
       align-items: center;
@@ -77,13 +77,13 @@
     }
 
     .btn-play:hover {
-      background: linear-gradient(135deg, #ff8f00, #f57c00);
-      transform: translateX(-50%) translateY(-3px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+      background-color: #4ee3e9;
+      transform: translate(-50%, -53%);
+      box-shadow: 0 6px 20px rgba(113, 240, 245, 0.6);
     }
 
     .btn-play:active {
-      transform: translateX(-50%) translateY(1px);
+      transform: translate(-50%, -49%);
     }
 
     /* Barra de volumen flotante en la parte inferior */
@@ -141,12 +141,11 @@
     const imgCerbero = document.getElementById('imagen-cerbero');
     const barraNivel = document.getElementById('barra-nivel');
 
-    // Rutas de tus imágenes en formato JPG
     const imagenes = {
-      nivel1: 'cerbero1.jpg', // Durmiendo
-      nivel2: 'cerbero2.jpg', // Atento
-      nivel3: 'cerbero3.jpg', // Gruñendo
-      nivel4: 'cerbero4.jpg'  // ¡Rugiendo!
+      nivel1: 'cerbero1.jpg',
+      nivel2: 'cerbero2.jpg',
+      nivel3: 'cerbero3.jpg',
+      nivel4: 'cerbero4.jpg'
     };
 
     let audioContext;
