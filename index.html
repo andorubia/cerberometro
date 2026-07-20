@@ -54,10 +54,9 @@
       display: block;
     }
 
-    /* Bloque contenedor centrado horizontalmente y un poco más arriba */
     .texto-inicio {
       position: absolute;
-      top: 35%; /* <-- Cambiado de 50% a 35% para elevar la posición */
+      top: 35%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
@@ -84,7 +83,6 @@
       color: #ffffff;
     }
 
-    /* Botón colocado directamente debajo del texto */
     .btn-play {
       margin-top: 24px;
       padding: 16px 36px;
@@ -104,7 +102,7 @@
     }
 
     .btn-play:hover {
-      background-color: #4ee3e9;
+      background-color: #512A6D;
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(113, 240, 245, 0.6);
     }
@@ -113,7 +111,6 @@
       transform: translateY(1px);
     }
 
-    /* Barra de volumen flotante en la parte inferior */
     #medidor-volumen {
       position: absolute;
       bottom: 20px;
@@ -151,3 +148,95 @@
 
         <button id="btn-comenzar" class="btn-play">
           ▶ Iniciar
+        </button>
+      </div>
+    </div>
+
+    <div id="pantalla-juego">
+      <div class="contenedor-cerbero">
+        <img id="imagen-cerbero" src="cerbero1.jpg" alt="Cerbero durmiendo">
+      </div>
+
+      <div id="medidor-volumen">
+        <div id="barra-nivel"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const btnComenzar = document.getElementById('btn-comenzar');
+    const pantallaInicio = document.getElementById('pantalla-inicio');
+    const pantallaJuego = document.getElementById('pantalla-juego');
+    const imgCerbero = document.getElementById('imagen-cerbero');
+    const barraNivel = document.getElementById('barra-nivel');
+
+    const imagenes = {
+      nivel1: 'cerbero1.jpg',
+      nivel2: 'cerbero2.jpg',
+      nivel3: 'cerbero3.jpg',
+      nivel4: 'cerbero4.jpg'
+    };
+
+    let audioContext;
+    let analyser;
+    let microphone;
+
+    btnComenzar.addEventListener('click', async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        microphone = audioContext.createMediaStreamSource(stream);
+
+        analyser.fftSize = 256;
+        microphone.connect(analyser);
+
+        pantallaInicio.style.display = 'none';
+        pantallaJuego.style.display = 'block';
+
+        procesarAudio();
+      } catch (err) {
+        alert('Debes permitir el acceso al micrófono para activar el Cerberómetro.');
+      }
+    });
+
+    function procesarAudio() {
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      
+      function actualizar() {
+        analyser.getByteFrequencyData(dataArray);
+
+        let suma = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          suma += dataArray[i];
+        }
+        let promedio = suma / dataArray.length;
+        
+        let volumen = Math.min(100, Math.round((promedio / 128) * 100));
+
+        barraNivel.style.width = volumen + '%';
+
+        if (volumen < 20) {
+          imgCerbero.src = imagenes.nivel1;
+          barraNivel.style.backgroundColor = '#4caf50';
+        } else if (volumen < 45) {
+          imgCerbero.src = imagenes.nivel2;
+          barraNivel.style.backgroundColor = '#ffeb3b';
+        } else if (volumen < 70) {
+          imgCerbero.src = imagenes.nivel3;
+          barraNivel.style.backgroundColor = '#ff9800';
+        } else {
+          imgCerbero.src = imagenes.nivel4;
+          barraNivel.style.backgroundColor = '#f44336';
+        }
+
+        requestAnimationFrame(actualizar);
+      }
+
+      actualizar();
+    }
+  </script>
+</body>
+</html>
