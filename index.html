@@ -54,21 +54,21 @@
       display: block;
     }
 
-    /* Bloque contenedor de texto y botón sin caja de fondo */
+    /* Bloque contenedor centrado totalmente y sin límites de ancho */
     .texto-inicio {
       position: absolute;
-      top: 20%;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%); /* Centrado vertical y horizontal perfecto */
       z-index: 10;
-      width: 90%;
-      max-width: 700px;
+      width: max-content; /* Se ajusta al ancho real de la línea más larga */
+      max-width: none; /* Elimina cualquier restricción de ancho */
       text-align: center;
-      /* Se eliminan el background, border, shadow y blur */
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); /* Garantiza la lectura sobre cualquier fondo */
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85); /* Sombras para asegurar legibilidad */
       display: flex;
       flex-direction: column;
       align-items: center;
+      white-space: nowrap; /* Evita que las frases se rompan en varios renglones */
     }
 
     .texto-inicio h2 {
@@ -100,7 +100,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      text-shadow: none; /* Evita heredar la sombra del texto */
+      text-shadow: none; /* Quita la sombra de texto para el botón */
     }
 
     .btn-play:hover {
