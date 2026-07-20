@@ -112,7 +112,7 @@
       transform: translateY(1px);
     }
 
-    /* --- CAJA DEL TEMPORIZADOR --- */
+    /* --- CAJA DEL TEMPORIZADOR (ESQUINA SUPERIOR IZQUIERDA) --- */
     .caja-temporizador {
       position: absolute;
       top: 20px;
@@ -167,7 +167,7 @@
       background-color: #40EEFE;
       color: #000000;
       padding: 12px 24px;
-      font-size: 18px;
+      font-size: 15px; /* Ajustado al tamaño de "Iniciar temporizador" */
       font-weight: bold;
       gap: 8px;
     }
@@ -180,14 +180,13 @@
       transform: scale(0.95);
     }
 
-    /* Estilo para la imagen PNG dentro del botón */
     .icono-btn {
       width: 22px;
       height: 22px;
       object-fit: contain;
     }
 
-    /* --- CAJA DE CONTROL DE RUIDO --- */
+    /* --- CAJA DE CONTROL DE RUIDO (ESQUINA SUPERIOR DERECHA) --- */
     .caja-ruido {
       position: absolute;
       top: 20px;
@@ -212,7 +211,7 @@
     }
 
     .etiqueta-control {
-      font-size: 18px;
+      font-size: 15px; /* Ajustado al tamaño de "Iniciar temporizador" */
       font-weight: bold;
       color: #40EEFE;
       letter-spacing: 0.5px;
@@ -225,7 +224,7 @@
     }
 
     .control-sensibilidad span {
-      font-size: 14px;
+      font-size: 15px; /* Ajustado al tamaño de "Iniciar temporizador" */
       color: #aaaaaa;
     }
 
@@ -260,7 +259,7 @@
     .btn-ruido {
       flex: 1;
       padding: 10px 16px;
-      font-size: 18px;
+      font-size: 15px; /* Ajustado al tamaño de "Iniciar temporizador" */
       font-weight: bold;
       border-radius: 25px;
       border: none;
@@ -286,7 +285,7 @@
       background-color: rgba(255, 255, 255, 0.35);
     }
 
-    /* --- MODAL --- */
+    /* --- MODAL Y BOTÓN DE CERRAR --- */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -302,6 +301,7 @@
     }
 
     .modal-contenido {
+      position: relative;
       background: #121212;
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 20px;
@@ -316,11 +316,30 @@
       gap: 12px;
     }
 
+    .btn-cerrar-modal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: #aaaaaa;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s ease;
+    }
+
+    .btn-cerrar-modal:hover {
+      color: #ffffff;
+    }
+
     .modal-contenido h2 {
       font-size: 20px;
       color: #40EEFE;
       text-align: left;
       width: 100%;
+      padding-right: 20px;
     }
 
     .modal-contenido p {
@@ -469,6 +488,7 @@
 
   <div class="modal-overlay" id="modal-objetivo">
     <div class="modal-contenido">
+      <button class="btn-cerrar-modal" id="btn-modal-cerrar">&times;</button>
       <h2>Fijar objetivo de tiempo</h2>
       <p>Elige cuánto tiempo deben permanecer en silencio los alumnos.</p>
 
@@ -504,6 +524,7 @@
 
     const modalObjetivo = document.getElementById('modal-objetivo');
     const btnModalCancelar = document.getElementById('btn-modal-cancelar');
+    const btnModalCerrar = document.getElementById('btn-modal-cerrar');
     const btnModalIniciar = document.getElementById('btn-modal-iniciar');
     const opcionesTiempo = document.querySelectorAll('.btn-opcion-tiempo');
 
@@ -566,6 +587,10 @@
       modalObjetivo.style.display = 'none';
     });
 
+    btnModalCerrar.addEventListener('click', () => {
+      modalObjetivo.style.display = 'none';
+    });
+
     btnModalIniciar.addEventListener('click', () => {
       if (minutosSeleccionados <= 0) {
         alert('Por favor, selecciona una opción de tiempo.');
@@ -580,7 +605,6 @@
       enPausa = false;
       btnDetener.textContent = "Detener";
       
-      // Actualiza manteniendo la imagen PNG
       btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Nuevo objetivo';
 
       cajaRuido.style.display = 'flex';
@@ -627,7 +651,6 @@
       barraNivel.style.width = '0%';
       btnDetener.textContent = "Detener";
       
-      // Restablece el texto con la imagen PNG
       btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Fijar objetivo';
       
       cajaRuido.style.display = 'none';
