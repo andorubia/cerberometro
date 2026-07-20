@@ -132,7 +132,7 @@
     }
 
     .pantalla-tiempo {
-      font-size: 42px; /* Reducido de 56px a 42px */
+      font-size: 42px;
       font-weight: bold;
       letter-spacing: 2px;
       color: #ffffff;
@@ -142,8 +142,8 @@
     }
 
     .icono-reloj {
-      width: 36px; /* Reducido de 48px a 36px */
-      height: 36px; /* Reducido de 48px a 36px */
+      width: 36px;
+      height: 36px;
       object-fit: contain;
     }
 
@@ -219,19 +219,26 @@
 
     .control-sensibilidad {
       display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .control-sensibilidad span {
-      font-size: 15px;
-      color: #aaaaaa;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
     }
 
     .control-sensibilidad input[type="range"] {
-      flex: 1;
+      width: 100%;
       accent-color: #40EEFE;
       cursor: pointer;
+    }
+
+    .etiquetas-sensibilidad {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .etiquetas-sensibilidad span {
+      font-size: 13px;
+      color: #aaaaaa;
     }
 
     #medidor-volumen {
@@ -257,7 +264,6 @@
     }
 
     .btn-ruido {
-      flex: 1;
       padding: 10px 16px;
       font-size: 15px;
       font-weight: bold;
@@ -265,9 +271,14 @@
       border: none;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .btn-detener {
+      flex: 1;
       background-color: #ff4d4d;
       color: #ffffff;
     }
@@ -279,6 +290,7 @@
     .btn-reiniciar-top {
       background-color: rgba(255, 255, 255, 0.2);
       color: #ffffff;
+      padding: 10px 16px;
     }
 
     .btn-reiniciar-top:hover {
@@ -460,9 +472,11 @@
         <div class="control-grupo">
           <span class="etiqueta-control">Sensibilidad del micrófono</span>
           <div class="control-sensibilidad">
-            <span>Menos</span>
             <input type="range" id="slider-sensibilidad" min="0.5" max="3" step="0.1" value="1">
-            <span>Más</span>
+            <div class="etiquetas-sensibilidad">
+              <span>Menos</span>
+              <span>Más</span>
+            </div>
           </div>
         </div>
 
@@ -474,8 +488,12 @@
         </div>
 
         <div class="botones-ruido">
-          <button id="btn-detener" class="btn-ruido btn-detener">Detener</button>
-          <button id="btn-reiniciar-top" class="btn-ruido btn-reiniciar-top">Reiniciar</button>
+          <button id="btn-detener" class="btn-ruido btn-detener">
+            <img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener
+          </button>
+          <button id="btn-reiniciar-top" class="btn-ruido btn-reiniciar-top">
+            <img src="icono-giro.png" alt="Reiniciar" class="icono-btn">
+          </button>
         </div>
       </div>
 
@@ -603,7 +621,7 @@
 
       temporizadorActivo = true;
       enPausa = false;
-      btnDetener.textContent = "Detener";
+      btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
       
       btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Nuevo objetivo';
 
@@ -633,9 +651,9 @@
 
       enPausa = !enPausa;
       if (enPausa) {
-        btnDetener.textContent = "Reanudar";
+        btnDetener.innerHTML = '<img src="icono-play.png" alt="Reanudar" class="icono-btn"> Reanudar';
       } else {
-        btnDetener.textContent = "Detener";
+        btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
       }
     });
 
@@ -649,7 +667,7 @@
       textoTiempo.textContent = '00:00';
       imgCerbero.src = imagenes.nivel1;
       barraNivel.style.width = '0%';
-      btnDetener.textContent = "Detener";
+      btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
       
       btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Fijar objetivo';
       
