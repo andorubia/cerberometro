@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>El Guardián del Inframundo - Medidor de Ruido</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .tarjeta {
+      background-color: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      color: #ff6f00;
+      margin-top: 0;
+      font-size: 28px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .mensaje-historia {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #e0e0e0;
+      margin: 20px 0;
+    }
+
+    .mensaje-historia p {
+      margin: 12px 0;
+    }
+
+    .btn-play {
+      padding: 16px 36px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffffff;
+      background: linear-gradient(135deg, #ff6f00, #e65100);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(230, 81, 0, 0.4);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-play:hover {
+      background: linear-gradient(135deg, #ff8f00, #f57c00);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(230, 81, 0, 0.6);
+    }
+
+    .btn-play:active {
+      transform: translateY(1px);
+    }
+
+    #pantalla-juego {
+      display: none;
+    }
+
+    .contenedor-cerbero {
+      width: 320px;
+      height: 320px;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .contenedor-cerbero img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      object-fit: cover;
+    }
+
+    #medidor-volumen {
+      width: 100%;
+      height: 22px;
+      background-color: #333;
+      border-radius: 11px;
+      overflow: hidden;
+      margin-top: 20px;
+      border: 1px solid #444;
+    }
+
+    #barra-nivel {
+      width: 0%;
+      height: 100%;
+      background-color: #4caf50;
+      transition: width 0.1s ease, background-color 0.2s;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tarjeta">
+
+    <div id="pantalla-inicio">
+      <h1>Cerberómetro</h1>
+      
+      <div class="contenedor-cerbero">
+        <img src="cerbero-inicio.jpg" alt="Portada Cerbero">
+      </div>
+
+      <div class="mensaje-historia">
+        <p><strong>Cerbero está cayendo en un profundo sueño...</strong></p>
+        <p>El guardián del Inframundo ha estado vigilando las puertas todo el día y necesita echarse una siesta.</p>
+        <p><em>Mantengamos el silencio para no despertar a la bestia.</em></p>
+      </div>
+
+      <button id="btn-comenzar" class="btn-play">
+        ▶ Activar Cerberómetro
+      </button>
+    </div>
+
+    <div id="pantalla-juego">
+      <div class="contenedor-cerbero">
+        <img id="imagen-cerbero" src="cerbero1.jpg" alt="Cerbero durmiendo">
+      </div>
+
+      <div id="medidor-volumen">
+        <div id="barra-nivel"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const btnComenzar = document.getElementById('btn-comenzar');
+    const pantallaInicio = document.getElementById('pantalla-inicio');
+    const pantallaJuego = document.getElementById('pantalla-juego');
+    const imgCerbero = document.getElementById('imagen-cerbero');
+    const barraNivel = document.getElementById('barra-nivel');
+
+    // Rutas de tus imágenes en formato JPG
+    const imagenes = {
+      nivel1: 'cerbero1.jpg', // Durmiendo
+      nivel2: 'cerbero2.jpg', // Atento
+      nivel3: 'cerbero3.jpg', // Gruñendo
+      nivel4: 'cerbero4.jpg'  // ¡Rugiendo!
+    };
+
+    let audioContext;
+    let analyser;
+    let microphone;
+
+    btnComenzar.addEventListener('click', async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        microphone = audioContext.createMediaStreamSource(stream);
+
+        analyser.fftSize = 256;
+        microphone.connect(analyser);
+
+        pantallaInicio.style.display = 'none';
+        pantallaJuego.style.display = 'block';
+
+        procesarAudio();
+      } catch (err) {
+        alert('Debes permitir el acceso al micrófono para activar el Cerberómetro.');
+      }
+    });
+
+    function procesarAudio() {
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      
+      function actualizar() {
+        analyser.getByteFrequencyData(dataArray);
+
+        let suma = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          suma += dataArray[i];
+        }
+        let promedio = suma / dataArray.length;
+        
+        let volumen = Math.min(100, Math.round((promedio / 128) * 100));
+
+        barraNivel.style.width = volumen + '%';
+
+        if (volumen < 20) {
+          imgCerbero.src = imagenes.nivel1;
+          barraNivel.style.backgroundColor = '#4caf50';
+        } else if (volumen < 45) {
+          imgCerbero.src = imagenes.nivel2;
+          barraNivel.style.backgroundColor = '#ffeb3b';
+        } else if (volumen < 70) {
+          imgCerbero.src = imagenes.nivel3;
+          barraNivel.style.backgroundColor = '#ff9800';
+        } else {
+          imgCerbero.src = imagenes.nivel4;
+          barraNivel.style.backgroundColor = '#f44336';
+        }
+
+        requestAnimationFrame(actualizar);
+      }
+
+      actualizar();
+    }
+  </script>
+</body>
+</html>
