@@ -546,7 +546,12 @@
     const btnModalIniciar = document.getElementById('btn-modal-iniciar');
     const opcionesTiempo = document.querySelectorAll('.btn-opcion-tiempo');
 
-    // --- Carga de efectos de sonido en bucle ---
+    // --- Sonido de ambiente de cueva de fondo ---
+    const audioCueva = new Audio('cueva.mp3');
+    audioCueva.loop = true;
+    audioCueva.volume = 0.2; // Volumen flojito (20%)
+
+    // --- Carga de efectos de sonido de Cerbero ---
     const audioGrunido = new Audio('grunido.mp3');
     audioGrunido.loop = true;
 
@@ -581,6 +586,9 @@
     btnComenzar.addEventListener('click', async () => {
       pantallaInicio.style.display = 'none';
       pantallaJuego.style.display = 'block';
+
+      // Reproducir sonido ambiente de cueva tras el clic inicial
+      audioCueva.play().catch(error => console.error("Error reproduciendo cueva.mp3:", error));
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
