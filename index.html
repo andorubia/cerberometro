@@ -2,97 +2,460 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>El Guardián del Inframundo - Medidor de Ruido</title>
+  <title>Cerberómetro</title>
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
+      background-color: #000000;
       color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
     }
 
     .tarjeta {
-      background-color: #1e1e1e;
-      border: 2px solid #333;
-      border-radius: 24px;
-      padding: 40px;
-      max-width: 800px;
-      width: 90%;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+      width: 100vw;
+      height: 100vh;
       position: relative;
     }
 
-    h1 {
-      color: #ff6f00;
-      margin-top: 0;
-      font-size: 38px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+    #pantalla-inicio,
+    #pantalla-juego {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #pantalla-juego {
+      display: none;
     }
 
     .contenedor-cerbero {
       width: 100%;
-      max-width: 550px;
-      height: 380px;
-      margin: 25px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
     }
 
     .contenedor-cerbero img {
       width: 100%;
       height: 100%;
-      border-radius: 16px;
-      box-shadow: 0 6px 25px rgba(0,0,0,0.6);
       object-fit: cover;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      display: block;
     }
 
-    .mensaje-historia {
-      font-size: 22px;
-      line-height: 1.6;
-      color: #e0e0e0;
-      margin: 25px 0 35px 0;
+    .texto-inicio {
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      width: max-content;
+      max-width: none;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      white-space: nowrap;
     }
 
-    .mensaje-historia p {
-      margin: 14px 0;
+    .texto-inicio h2 {
+      font-size: 50px;
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
+
+    .texto-inicio p {
+      font-size: 28px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      color: #ffffff;
     }
 
     .btn-play {
-      padding: 18px 45px;
-      font-size: 24px;
+      font-family: inherit;
+      margin-top: 24px;
+      padding: 16px 36px;
+      font-size: 20px;
       font-weight: bold;
-      color: #ffffff;
-      background: linear-gradient(135deg, #ff6f00, #e65100);
+      color: #000000;
+      background-color: #ffffff;
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(230, 81, 0, 0.5);
+      box-shadow: 0 4px 15px rgba(64, 238, 254, 0.4);
       transition: all 0.3s ease;
       display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-shadow: none;
+    }
+
+    .btn-play:hover {
+      background-color: #ffffff;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(64, 238, 254, 0.6);
+    }
+
+    .btn-play:active {
+      transform: translateY(1px);
+    }
+
+    /* --- CAJA DEL TEMPORIZADOR (ESQUINA SUPERIOR IZQUIERDA) --- */
+    .caja-temporizador {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 20px 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      min-width: 280px;
+    }
+
+    .pantalla-tiempo {
+      font-size: 42px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #ffffff;
+      display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .btn-play:hover {
-      background: linear-gradient(135deg, #ff8f00, #f57c00);
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 8px 25px rgba(230, 81, 0, 0.7);
+    .icono-reloj {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
     }
 
-    /* BOTÓN CIRCULAR CON IMAGEN DE HUESO (PNG) */
+    .botones-temporizador {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-temp {
+      font-family: inherit;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-temp-fijar {
+      background-color: #40EEFE;
+      color: #000000;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: bold;
+      gap: 8px;
+    }
+
+    .btn-temp-fijar:hover {
+      background-color: #2bd8ea;
+    }
+
+    .btn-temp:active {
+      transform: scale(0.95);
+    }
+
+    .icono-btn {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    /* --- CAJA DE CONTROL DE RUIDO (ESQUINA SUPERIOR DERECHA) --- */
+    .caja-ruido {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 20px 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 280px;
+      width: 280px;
+    }
+
+    .control-grupo {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .etiqueta-control {
+      font-size: 14px;
+      font-weight: bold;
+      color: #40EEFE;
+      letter-spacing: 0.5px;
+    }
+
+    .control-sensibilidad {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .control-sensibilidad input[type="range"] {
+      width: 100%;
+      accent-color: #40EEFE;
+      cursor: pointer;
+    }
+
+    .etiquetas-sensibilidad {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .etiquetas-sensibilidad span {
+      font-size: 12px;
+      color: #aaaaaa;
+    }
+
+    #medidor-volumen {
+      width: 100%;
+      height: 16px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #barra-nivel {
+      width: 0%;
+      height: 100%;
+      background-color: #4caf50;
+      transition: width 0.1s ease, background-color 0.2s;
+    }
+
+    .botones-ruido {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .btn-ruido {
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-detener {
+      flex: 1;
+      background-color: #ff4d4d;
+      color: #ffffff;
+    }
+
+    .btn-detener:hover {
+      background-color: #ff1a1a;
+    }
+
+    .btn-reiniciar-top {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 10px 14px;
+    }
+
+    .btn-reiniciar-top:hover {
+      background-color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* --- MODAL Y BOTÓN DE CERRAR --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-contenido {
+      position: relative;
+      background: #121212;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px 40px;
+      width: 90%;
+      max-width: 500px;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .btn-cerrar-modal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: #aaaaaa;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s ease;
+    }
+
+    .btn-cerrar-modal:hover {
+      color: #ffffff;
+    }
+
+    .modal-contenido h2 {
+      font-size: 20px;
+      color: #40EEFE;
+      text-align: left;
+      width: 100%;
+      padding-right: 20px;
+    }
+
+    .modal-contenido p {
+      font-size: 14px;
+      color: #cccccc;
+      line-height: 1.4;
+      text-align: left;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .grid-opciones-tiempo {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .btn-opcion-tiempo {
+      font-family: inherit;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-opcion-tiempo:hover {
+      background: rgba(64, 238, 254, 0.2);
+      border-color: #40EEFE;
+    }
+
+    .btn-opcion-tiempo.activo {
+      background: #40EEFE;
+      color: #000000;
+      border-color: #40EEFE;
+    }
+
+    .acciones-modal {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .btn-modal {
+      font-family: inherit;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancelar {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .btn-cancelar:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-iniciar-modal {
+      background: #40EEFE;
+      color: #000000;
+    }
+
+    .btn-iniciar-modal:hover {
+      background: #2bd8ea;
+      box-shadow: 0 4px 15px rgba(64, 238, 254, 0.4);
+    }
+
+    /* --- ESTILOS DE LA PESTAÑA DE OFRENDA (CERBERO 4) --- */
+    .modal-contenido-ofrenda {
+      align-items: center;
+      text-align: center;
+      border-color: #ff3300;
+      box-shadow: 0 0 35px rgba(255, 51, 0, 0.6);
+    }
+
+    .modal-contenido-ofrenda h2 {
+      color: #ff3300;
+      font-size: 26px;
+      text-align: center;
+      padding-right: 0;
+    }
+
+    .modal-contenido-ofrenda p {
+      text-align: center;
+      font-size: 16px;
+    }
+
     .btn-circular-hueso {
       width: 110px;
       height: 110px;
@@ -125,75 +488,6 @@
     .btn-circular-hueso:active {
       transform: scale(0.95);
     }
-
-    #pantalla-juego {
-      display: none;
-    }
-
-    #medidor-volumen {
-      width: 100%;
-      height: 28px;
-      background-color: #333;
-      border-radius: 14px;
-      overflow: hidden;
-      margin-top: 25px;
-      border: 2px solid #444;
-    }
-
-    #barra-nivel {
-      width: 0%;
-      height: 100%;
-      background-color: #4caf50;
-      transition: width 0.1s ease, background-color 0.2s;
-    }
-
-    /* ESTILOS DE LA VENTANA EMERGENTE (MODAL) */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(5px);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-contenido {
-      background-color: #261717;
-      border: 3px solid #ff3300;
-      border-radius: 20px;
-      padding: 35px;
-      max-width: 550px;
-      width: 85%;
-      box-shadow: 0 0 30px rgba(255, 51, 0, 0.6);
-      animation: aparecer 0.3s ease-out;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    @keyframes aparecer {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-titulo {
-      color: #ff3300;
-      font-size: 32px;
-      margin-top: 0;
-      text-transform: uppercase;
-    }
-
-    .modal-texto {
-      font-size: 20px;
-      color: #f0f0f0;
-      line-height: 1.5;
-      margin: 15px 0 20px 0;
-    }
   </style>
 </head>
 <body>
@@ -201,43 +495,100 @@
   <div class="tarjeta">
 
     <div id="pantalla-inicio">
-      <h1>Cerberómetro</h1>
-      
       <div class="contenedor-cerbero">
         <img src="cerbero-inicio.jpg" alt="Portada Cerbero">
       </div>
 
-      <div class="mensaje-historia">
-        <p><strong>Cerbero está cayendo en un profundo sueño...</strong></p>
-        <p>El guardián del Inframundo ha estado vigilando las puertas todo el día y necesita echarse una siesta.</p>
-        <p><em>Mantengamos el silencio para no despertar a la bestia.</em></p>
-      </div>
+      <div class="texto-inicio">
+        <h2>Cerbero está cayendo en un profundo sueño...</h2>
+        <p>El guardián del Inframundo lleva todo el día vigilando sus puertas y necesita echarse una siesta.</p>
+        <p>Mantengamos el silencio para no despertar a la bestia.</p>
 
-      <button id="btn-comenzar" class="btn-play">
-        ▶ Activar Cerberómetro
-      </button>
+        <button id="btn-comenzar" class="btn-play">
+          ▶ Iniciar monitor de ruido
+        </button>
+      </div>
     </div>
 
     <div id="pantalla-juego">
-      <div class="contenedor-cerbero">
-        <img id="imagen-cerbero" src="cerbero1.jpg" alt="Cerbero durmiendo">
+      <div class="caja-temporizador">
+        <div class="pantalla-tiempo">
+          <img src="icono-reloj.png" alt="Reloj" class="icono-reloj">
+          <span id="texto-tiempo">00:00</span>
+        </div>
+
+        <div class="botones-temporizador">
+          <button id="btn-fijar-objetivo" class="btn-temp btn-temp-fijar">
+            <img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Fijar objetivo
+          </button>
+        </div>
       </div>
 
-      <div id="medidor-volumen">
-        <div id="barra-nivel"></div>
+      <div class="caja-ruido" id="caja-ruido">
+        <div class="control-grupo">
+          <span class="etiqueta-control">Sensibilidad del micrófono</span>
+          <div class="control-sensibilidad">
+            <input type="range" id="slider-sensibilidad" min="0.5" max="3" step="0.1" value="1">
+            <div class="etiquetas-sensibilidad">
+              <span>Menos</span>
+              <span>Más</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-grupo">
+          <span class="etiqueta-control">Nivel de ruido</span>
+          <div id="medidor-volumen">
+            <div id="barra-nivel"></div>
+          </div>
+        </div>
+
+        <div class="botones-ruido">
+          <button id="btn-detener" class="btn-ruido btn-detener">
+            <img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener
+          </button>
+          <button id="btn-reiniciar-top" class="btn-ruido btn-reiniciar-top">
+            <img src="icono-giro.png" alt="Reiniciar" class="icono-btn">
+          </button>
+        </div>
+      </div>
+
+      <div class="contenedor-cerbero">
+        <img id="imagen-cerbero" src="cerbero1.jpg" alt="Cerbero durmiendo">
       </div>
     </div>
 
   </div>
 
-  <div id="modal-ofrenda" class="modal-overlay">
+  <div class="modal-overlay" id="modal-objetivo">
     <div class="modal-contenido">
-      <h2 class="modal-titulo">¡Cerbero se ha despertado!</h2>
-      <p class="modal-texto">
+      <button class="btn-cerrar-modal" id="btn-modal-cerrar">&times;</button>
+      <h2>Fijar objetivo de tiempo</h2>
+      <p>Elige cuánto tiempo deben permanecer en silencio los alumnos.</p>
+
+      <div class="grid-opciones-tiempo">
+        <button class="btn-opcion-tiempo" data-min="1">1 min</button>
+        <button class="btn-opcion-tiempo" data-min="3">3 min</button>
+        <button class="btn-opcion-tiempo" data-min="5">5 min</button>
+        <button class="btn-opcion-tiempo" data-min="10">10 min</button>
+        <button class="btn-opcion-tiempo" data-min="15">15 min</button>
+        <button class="btn-opcion-tiempo" data-min="20">20 min</button>
+      </div>
+
+      <div class="acciones-modal">
+        <button class="btn-modal btn-cancelar" id="btn-modal-cancelar">Cancelar</button>
+        <button class="btn-modal btn-iniciar-modal" id="btn-modal-iniciar">Iniciar temporizador</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-ofrenda">
+    <div class="modal-contenido modal-contenido-ofrenda">
+      <h2>¡Cerbero se ha despertado!</h2>
+      <p>
         El ruido ha roto su descanso y la bestia está fuera de control.<br><br>
-        <strong>Dadle alguna ofrenda para amansarlo de nuevo y restaurar la paz.</strong>
+        <strong>Dadle una ofrenda para amansarlo de nuevo y restaurar la paz.</strong>
       </p>
-      
       <button id="btn-ofrendar" class="btn-circular-hueso" title="Ofrecer hueso">
         <img src="hueso.png" alt="Hueso de ofrenda">
       </button>
@@ -250,9 +601,63 @@
     const pantallaJuego = document.getElementById('pantalla-juego');
     const imgCerbero = document.getElementById('imagen-cerbero');
     const barraNivel = document.getElementById('barra-nivel');
-    
+    const sliderSensibilidad = document.getElementById('slider-sensibilidad');
+    const cajaRuido = document.getElementById('caja-ruido');
+
+    const textoTiempo = document.getElementById('texto-tiempo');
+    const btnFijarObjetivo = document.getElementById('btn-fijar-objetivo');
+    const btnDetener = document.getElementById('btn-detener');
+    const btnReiniciarTop = document.getElementById('btn-reiniciar-top');
+
+    const modalObjetivo = document.getElementById('modal-objetivo');
+    const btnModalCancelar = document.getElementById('btn-modal-cancelar');
+    const btnModalCerrar = document.getElementById('btn-modal-cerrar');
+    const btnModalIniciar = document.getElementById('btn-modal-iniciar');
+    const opcionesTiempo = document.querySelectorAll('.btn-opcion-tiempo');
+
+    // --- Modal y botón de Ofrenda ---
     const modalOfrenda = document.getElementById('modal-ofrenda');
     const btnOfrendar = document.getElementById('btn-ofrendar');
+    let estaBloqueadoPorOfrenda = false;
+
+    // --- Configuración de audios principales ---
+    const audioLobby = new Audio('lobby.mp3');
+    audioLobby.loop = true;
+    audioLobby.volume = 0.1; // Volumen reducido para no molestar
+
+    const audioCueva = new Audio('cueva.mp3');
+    audioCueva.loop = true;
+    audioCueva.volume = 0.6;
+
+    // --- Reproducir Lobby inmediatamente en la entrada ---
+    audioLobby.play().catch(() => {
+      const activarLobbyEnInteraccion = () => {
+        audioLobby.play().catch(() => {});
+        window.removeEventListener('click', activarLobbyEnInteraccion);
+        window.removeEventListener('keydown', activarLobbyEnInteraccion);
+        window.removeEventListener('mousemove', activarLobbyEnInteraccion);
+      };
+      window.addEventListener('click', activarLobbyEnInteraccion);
+      window.addEventListener('keydown', activarLobbyEnInteraccion);
+      window.addEventListener('mousemove', activarLobbyEnInteraccion);
+    });
+
+    // --- Carga de efectos de sonido de Cerbero ---
+    const audioGrunido = new Audio('grunido.mp3');
+    audioGrunido.loop = true;
+    audioGrunido.volume = 1.0;
+
+    const audioLadrido = new Audio('ladrido.mp3');
+    audioLadrido.loop = true;
+    audioLadrido.volume = 1.0;
+
+    let efectoActual = null;
+
+    let temporizadorInterval = null;
+    let tiempoRestante = 0;
+    let minutosSeleccionados = 0;
+    let temporizadorActivo = false;
+    let enPausa = false;
 
     const imagenes = {
       nivel1: 'cerbero1.jpg',
@@ -264,43 +669,191 @@
     let audioContext;
     let analyser;
     let microphone;
-    let bloqueadoPorRuido = false;
-    let temporizadorNivel4 = null;
+
+    // --- Variables de suavizado e histéresis ---
+    let volumenSuave = 0;
+    let nivelActual = 1;
+    let tiempoUltimaAlerta = 0;
+    const TIEMPO_CALMA_MS = 1500;
 
     btnComenzar.addEventListener('click', async () => {
+      // 1. DETENER LOBBY POR COMPLETO Y ARRANCAR CUEVA
+      audioLobby.pause();
+      audioLobby.currentTime = 0;
+
+      audioCueva.play().catch(error => console.error("Error al reproducir cueva.mp3:", error));
+
+      // 2. Transición de pantallas
+      pantallaInicio.style.display = 'none';
+      pantallaJuego.style.display = 'block';
+
+      // 3. Activar micrófono
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
 
         analyser.fftSize = 256;
         microphone.connect(analyser);
 
-        pantallaInicio.style.display = 'none';
-        pantallaJuego.style.display = 'block';
-
         procesarAudio();
       } catch (err) {
-        alert('Debes permitir el acceso al micrófono para activar el Cerberómetro.');
+        alert('Debes permitir el acceso al micrófono para activar la detección de ruido.');
       }
     });
 
+    function formatearTiempo(segundosTotales) {
+      const min = Math.floor(segundosTotales / 60);
+      const seg = segundosTotales % 60;
+      return `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
+    }
+
+    btnFijarObjetivo.addEventListener('click', () => {
+      modalObjetivo.style.display = 'flex';
+    });
+
+    opcionesTiempo.forEach(boton => {
+      boton.addEventListener('click', () => {
+        opcionesTiempo.forEach(b => b.classList.remove('activo'));
+        boton.classList.add('activo');
+        minutosSeleccionados = parseInt(boton.getAttribute('data-min'));
+      });
+    });
+
+    btnModalCancelar.addEventListener('click', () => {
+      modalObjetivo.style.display = 'none';
+    });
+
+    btnModalCerrar.addEventListener('click', () => {
+      modalObjetivo.style.display = 'none';
+    });
+
+    btnModalIniciar.addEventListener('click', () => {
+      if (minutosSeleccionados <= 0) {
+        alert('Por favor, selecciona una opción de tiempo.');
+        return;
+      }
+
+      tiempoRestante = minutosSeleccionados * 60;
+      textoTiempo.textContent = formatearTiempo(tiempoRestante);
+      modalObjetivo.style.display = 'none';
+
+      temporizadorActivo = true;
+      enPausa = false;
+      btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
+      btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Nuevo objetivo';
+
+      cajaRuido.style.display = 'flex';
+
+      iniciarCuentaRegresiva();
+    });
+
+    function iniciarCuentaRegresiva() {
+      clearInterval(temporizadorInterval);
+      temporizadorInterval = setInterval(() => {
+        if (!enPausa && !estaBloqueadoPorOfrenda) {
+          tiempoRestante--;
+          textoTiempo.textContent = formatearTiempo(tiempoRestante);
+
+          if (tiempoRestante <= 0) {
+            clearInterval(temporizadorInterval);
+            detenerAudios();
+            alert('¡El tiempo ha terminado!');
+            reiniciarTemporizador();
+          }
+        }
+      }, 1000);
+    }
+
+    btnDetener.addEventListener('click', () => {
+      if (!temporizadorActivo) return;
+
+      enPausa = !enPausa;
+      if (enPausa) {
+        btnDetener.innerHTML = '<img src="icono-play.png" alt="Reanudar" class="icono-btn"> Reanudar';
+        detenerAudios();
+      } else {
+        btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
+      }
+    });
+
+    // --- Acción al hacer clic en el hueso ---
     btnOfrendar.addEventListener('click', () => {
       modalOfrenda.style.display = 'none';
+      estaBloqueadoPorOfrenda = false;
+      nivelActual = 1;
+      volumenSuave = 0;
       imgCerbero.src = imagenes.nivel1;
       barraNivel.style.backgroundColor = '#4caf50';
       barraNivel.style.width = '0%';
-      bloqueadoPorRuido = false;
-      temporizadorNivel4 = null;
+      detenerAudios();
     });
+
+    function detenerAudios() {
+      audioGrunido.pause();
+      audioGrunido.currentTime = 0;
+      audioLadrido.pause();
+      audioLadrido.currentTime = 0;
+      efectoActual = null;
+    }
+
+    function reproducirEfecto(audio) {
+      if (efectoActual !== audio) {
+        detenerAudios();
+        efectoActual = audio;
+        audio.play().catch(error => console.error(error));
+      }
+    }
+
+    function reiniciarTemporizador() {
+      clearInterval(temporizadorInterval);
+      detenerAudios();
+      tiempoRestante = 0;
+      minutosSeleccionados = 0;
+      temporizadorActivo = false;
+      enPausa = false;
+      estaBloqueadoPorOfrenda = false;
+      modalOfrenda.style.display = 'none';
+      
+      nivelActual = 1;
+      volumenSuave = 0;
+      textoTiempo.textContent = '00:00';
+      imgCerbero.src = imagenes.nivel1;
+      barraNivel.style.width = '0%';
+      btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
+      btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Fijar objetivo';
+      cajaRuido.style.display = 'none';
+
+      opcionesTiempo.forEach(b => b.classList.remove('activo'));
+    }
+
+    btnReiniciarTop.addEventListener('click', reiniciarTemporizador);
 
     function procesarAudio() {
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       
       function actualizar() {
-        if (!bloqueadoPorRuido) {
+        if (!analyser) return;
+
+        if (estaBloqueadoPorOfrenda) {
+          requestAnimationFrame(actualizar);
+          return;
+        }
+
+        if (!temporizadorActivo || enPausa) {
+          barraNivel.style.width = '0%';
+          detenerAudios();
+          if (!temporizadorActivo) {
+            imgCerbero.src = imagenes.nivel1;
+          }
+        } else {
           analyser.getByteFrequencyData(dataArray);
 
           let suma = 0;
@@ -309,32 +862,59 @@
           }
           let promedio = suma / dataArray.length;
           
-          let volumen = Math.min(100, Math.round((promedio / 128) * 100));
+          let sensibilidad = parseFloat(sliderSensibilidad.value);
+          let volumenInstantaneo = Math.min(100, Math.round(((promedio * sensibilidad) / 128) * 100));
 
-          barraNivel.style.width = volumen + '%';
+          volumenSuave = volumenSuave * 0.85 + volumenInstantaneo * 0.15;
+          barraNivel.style.width = Math.round(volumenSuave) + '%';
 
-          if (volumen < 20) {
-            imgCerbero.src = imagenes.nivel1;
-            barraNivel.style.backgroundColor = '#4caf50';
-            reiniciarTemporizador();
-          } else if (volumen < 45) {
-            imgCerbero.src = imagenes.nivel2;
-            barraNivel.style.backgroundColor = '#ffeb3b';
-            reiniciarTemporizador();
-          } else if (volumen < 70) {
-            imgCerbero.src = imagenes.nivel3;
-            barraNivel.style.backgroundColor = '#ff9800';
-            reiniciarTemporizador();
-          } else {
-            imgCerbero.src = imagenes.nivel4;
-            barraNivel.style.backgroundColor = '#f44336';
+          let nivelDetectado = 1;
+          if (volumenSuave >= 70) {
+            nivelDetectado = 4;
+          } else if (volumenSuave >= 45) {
+            nivelDetectado = 3;
+          } else if (volumenSuave >= 20) {
+            nivelDetectado = 2;
+          }
 
-            if (!temporizadorNivel4) {
-              temporizadorNivel4 = setTimeout(() => {
-                bloqueadoPorRuido = true;
-                modalOfrenda.style.display = 'flex';
-              }, 5000);
+          const ahora = Date.now();
+
+          if (nivelDetectado > nivelActual) {
+            nivelActual = nivelDetectado;
+            tiempoUltimaAlerta = ahora;
+          } else if (nivelDetectado < nivelActual) {
+            if (ahora - tiempoUltimaAlerta > TIEMPO_CALMA_MS) {
+              nivelActual = nivelDetectado;
             }
+          } else {
+            tiempoUltimaAlerta = ahora;
+          }
+
+          switch (nivelActual) {
+            case 1:
+              imgCerbero.src = imagenes.nivel1;
+              barraNivel.style.backgroundColor = '#4caf50';
+              detenerAudios();
+              break;
+            case 2:
+              imgCerbero.src = imagenes.nivel2;
+              barraNivel.style.backgroundColor = '#ffeb3b';
+              detenerAudios();
+              break;
+            case 3:
+              imgCerbero.src = imagenes.nivel3;
+              barraNivel.style.backgroundColor = '#ff9800';
+              reproducirEfecto(audioGrunido);
+              break;
+            case 4:
+              imgCerbero.src = imagenes.nivel4;
+              barraNivel.style.backgroundColor = '#f44336';
+              reproducirEfecto(audioLadrido);
+              
+              // ¡SALIÓ CERBERO 4! Desplegar pestaña de ofrenda
+              estaBloqueadoPorOfrenda = true;
+              modalOfrenda.style.display = 'flex';
+              break;
           }
         }
 
@@ -342,13 +922,6 @@
       }
 
       actualizar();
-    }
-
-    function reiniciarTemporizador() {
-      if (temporizadorNivel4) {
-        clearTimeout(temporizadorNivel4);
-        temporizadorNivel4 = null;
-      }
     }
   </script>
 </body>
