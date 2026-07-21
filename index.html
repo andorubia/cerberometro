@@ -438,24 +438,38 @@
 
     /* --- ESTILOS DE LA PESTAÑA DE OFRENDA (CERBERO 4) - AZUL CIAN --- */
     .modal-contenido-ofrenda {
+      display: flex;
+      flex-direction: column;
       align-items: center;
       text-align: center;
       border-color: #40EEFE;
       box-shadow: 0 0 35px rgba(64, 238, 254, 0.4);
       max-width: 650px;
-      gap: 20px; /* Controla la separación uniforme entre título, texto y botón */
+      padding: 32px 36px;
+      gap: 24px; /* Separación uniforme entre elementos dentro del contenedor */
+    }
+
+    .modal-contenido-ofrenda .textos-ofrenda {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
     }
 
     .modal-contenido-ofrenda h2 {
       color: #40EEFE;
-      font-size: 32px; /* Título más grande */
+      font-size: 34px; /* Título más grande */
+      line-height: 1.2;
       text-align: center;
       padding-right: 0;
+      margin: 0;
     }
 
     .modal-contenido-ofrenda p {
       text-align: center;
-      font-size: 16px;
+      font-size: 18px; /* Texto descriptivo más grande */
+      line-height: 1.4;
       margin-bottom: 0;
     }
 
@@ -472,7 +486,8 @@
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
-      margin-top: 5px;
+      flex-shrink: 0;
+      margin-top: 0;
     }
 
     .btn-circular-hueso img {
@@ -587,9 +602,11 @@
 
   <div class="modal-overlay" id="modal-ofrenda">
     <div class="modal-contenido modal-contenido-ofrenda">
-      <h2>¡Cerbero se ha despertado!</h2>
-      <p>El ruido ha roto su descanso y la bestia está fuera de control.</p>
-      <p><strong>Dadle una ofrenda para amansarlo de nuevo y restaurar la paz.</strong></p>
+      <div class="textos-ofrenda">
+        <h2>¡Cerbero se ha despertado!</h2>
+        <p>El ruido ha roto su descanso y la bestia está fuera de control.</p>
+        <p><strong>Dadle una ofrenda para amansarlo de nuevo y restaurar la paz.</strong></p>
+      </div>
       <button id="btn-ofrendar" class="btn-circular-hueso" title="Ofrecer hueso">
         <img src="hueso.png" alt="Hueso de ofrenda">
       </button>
