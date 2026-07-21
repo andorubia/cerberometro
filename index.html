@@ -449,7 +449,7 @@
         <p>Mantengamos el silencio para no despertar a la bestia.</p>
 
         <button id="btn-comenzar" class="btn-play">
-          Iniciar
+          ▶ Iniciar
         </button>
       </div>
     </div>
@@ -546,6 +546,11 @@
     const btnModalIniciar = document.getElementById('btn-modal-iniciar');
     const opcionesTiempo = document.querySelectorAll('.btn-opcion-tiempo');
 
+    // --- Carga de efectos de sonido ---
+    const audioGrunido = new Audio('grunido.mp3');
+    const audioLadrido = new Audio('ladrido.mp3');
+    let efectoActual = null; // Guarda qué efecto está sonando
+
     let temporizadorInterval = null;
     let tiempoRestante = 0;
     let minutosSeleccionados = 0;
@@ -639,6 +644,7 @@
 
           if (tiempoRestante <= 0) {
             clearInterval(temporizadorInterval);
+            detenerAudios();
             alert('¡El tiempo ha terminado!');
             reiniciarTemporizador();
           }
@@ -652,13 +658,31 @@
       enPausa = !enPausa;
       if (enPausa) {
         btnDetener.innerHTML = '<img src="icono-play.png" alt="Reanudar" class="icono-btn"> Reanudar';
+        detenerAudios();
       } else {
         btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
       }
     });
 
+    function detenerAudios() {
+      audioGrunido.pause();
+      audioGrunido.currentTime = 0;
+      audioLadrido.pause();
+      audioLadrido.currentTime = 0;
+      efectoActual = null;
+    }
+
+    function reproducirEfecto(audio) {
+      if (efectoActual !== audio) {
+        detenerAudios();
+        efectoActual = audio;
+        audio.play().catch(() => {}); // Evita bloqueos del navegador si falla la reproducción
+      }
+    }
+
     function reiniciarTemporizador() {
       clearInterval(temporizadorInterval);
+      detenerAudios();
       tiempoRestante = 0;
       minutosSeleccionados = 0;
       temporizadorActivo = false;
@@ -686,6 +710,7 @@
 
         if (!temporizadorActivo || enPausa) {
           barraNivel.style.width = '0%';
+          detenerAudios();
           if (!temporizadorActivo) {
             imgCerbero.src = imagenes.nivel1;
           }
@@ -706,15 +731,19 @@
           if (volumen < 20) {
             imgCerbero.src = imagenes.nivel1;
             barraNivel.style.backgroundColor = '#4caf50';
+            detenerAudios();
           } else if (volumen < 45) {
             imgCerbero.src = imagenes.nivel2;
             barraNivel.style.backgroundColor = '#ffeb3b';
+            detenerAudios();
           } else if (volumen < 70) {
             imgCerbero.src = imagenes.nivel3;
             barraNivel.style.backgroundColor = '#ff9800';
+            reproducirEfecto(audioGrunido);
           } else {
             imgCerbero.src = imagenes.nivel4;
             barraNivel.style.backgroundColor = '#f44336';
+            reproducirEfecto(audioLadrido);
           }
         }
 
