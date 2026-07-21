@@ -546,31 +546,34 @@
     const btnModalIniciar = document.getElementById('btn-modal-iniciar');
     const opcionesTiempo = document.querySelectorAll('.btn-opcion-tiempo');
 
-    // --- Sonido de ambiente de cueva de fondo ---
+    // --- Sonidos de ambiente de fondo en bucle infinito ---
+    // 1. Audio de inicio / lobby (repetible)
+    const audioLobby = new Audio('lobby.mp3');
+    audioLobby.loop = true;
+    audioLobby.volume = 0.5;
+
+    // Detecta el primer clic en pantalla para comenzar la música de lobby si el navegador bloquea el auto-play
+    const iniciarAudioLobby = () => {
+      audioLobby.play().catch(() => {});
+      window.removeEventListener('click', iniciarAudioLobby);
+    };
+    window.addEventListener('click', iniciarAudioLobby);
+
+    // 2. Audio de cueva para el juego (repetible)
     const audioCueva = new Audio('cueva.mp3');
     audioCueva.loop = true;
     audioCueva.volume = 0.6;
 
-    // Iniciar sonido de cueva al interactuar con el lobby
-    function iniciarMusicaCueva() {
-      if (audioCueva.paused) {
-        audioCueva.play().catch(error => console.error("Error reproduciendo cueva.mp3:", error));
-      }
-      document.removeEventListener('click', iniciarMusicaCueva);
-    }
-    document.addEventListener('click', iniciarMusicaCueva);
-
     // --- Carga de efectos de sonido de Cerbero ---
     const audioGrunido = new Audio('grunido.mp3');
     audioGrunido.loop = true;
-    audioGrunido.volume = 0;
+    audioGrunido.volume = 1.0;
 
     const audioLadrido = new Audio('ladrido.mp3');
     audioLadrido.loop = true;
-    audioLadrido.volume = 0;
+    audioLadrido.volume = 1.0;
 
     let efectoActual = null;
-    let fadeIntervals = {};
 
     let temporizadorInterval = null;
     let tiempoRestante = 0;
@@ -593,11 +596,17 @@
     let volumenSuave = 0;
     let nivelActual = 1;
     let tiempoUltimaAlerta = 0;
-    const TIEMPO_CALMA_MS = 300; // Transición casi instantánea de vuelta a 1 o 2 (0.3s)
+    const TIEMPO_CALMA_MS = 1500;
 
     btnComenzar.addEventListener('click', async () => {
       pantallaInicio.style.display = 'none';
       pantallaJuego.style.display = 'block';
+
+      // Detener audio de lobby y comenzar el audio ambiental de la cueva
+      audioLobby.pause();
+      audioLobby.currentTime = 0;
+
+      audioCueva.play().catch(error => console.error("Error reproduciendo cueva.mp3:", error));
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -675,7 +684,7 @@
 
           if (tiempoRestante <= 0) {
             clearInterval(temporizadorInterval);
-            detenerAudios(150);
+            detenerAudios();
             alert('¡El tiempo ha terminado!');
             reiniciarTemporizador();
           }
@@ -689,77 +698,31 @@
       enPausa = !enPausa;
       if (enPausa) {
         btnDetener.innerHTML = '<img src="icono-play.png" alt="Reanudar" class="icono-btn"> Reanudar';
-        detenerAudios(150);
+        detenerAudios();
       } else {
         btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
       }
     });
 
-    // --- Funciones para manejar la transición suave (Fundido / Crossfade) ---
-    function aplicarFadeOut(audio, duracion = 150) {
-      if (!audio) return;
-      const id = audio.src;
-      if (fadeIntervals[id]) clearInterval(fadeIntervals[id]);
-
-      if (audio.paused || audio.volume === 0) return;
-
-      const paso = 30;
-      const decremento = audio.volume / (duracion / paso);
-
-      fadeIntervals[id] = setInterval(() => {
-        if (audio.volume > decremento) {
-          audio.volume -= decremento;
-        } else {
-          audio.volume = 0;
-          audio.pause();
-          audio.currentTime = 0;
-          clearInterval(fadeIntervals[id]);
-        }
-      }, paso);
-    }
-
-    function aplicarFadeIn(audio, volumenObjetivo = 1.0, duracion = 300) {
-      if (!audio) return;
-      const id = audio.src;
-      if (fadeIntervals[id]) clearInterval(fadeIntervals[id]);
-
-      if (audio.paused) {
-        audio.volume = 0;
-        audio.play().catch(e => console.error(e));
-      }
-
-      const paso = 30;
-      const incremento = volumenObjetivo / (duracion / paso);
-
-      fadeIntervals[id] = setInterval(() => {
-        if (audio.volume + incremento < volumenObjetivo) {
-          audio.volume += incremento;
-        } else {
-          audio.volume = volumenObjetivo;
-          clearInterval(fadeIntervals[id]);
-        }
-      }, paso);
-    }
-
-    function detenerAudios(duracion = 150) {
-      aplicarFadeOut(audioGrunido, duracion);
-      aplicarFadeOut(audioLadrido, duracion);
+    function detenerAudios() {
+      audioGrunido.pause();
+      audioGrunido.currentTime = 0;
+      audioLadrido.pause();
+      audioLadrido.currentTime = 0;
       efectoActual = null;
     }
 
     function reproducirEfecto(audio) {
       if (efectoActual !== audio) {
-        if (efectoActual) {
-          aplicarFadeOut(efectoActual, 150);
-        }
+        detenerAudios();
         efectoActual = audio;
-        aplicarFadeIn(audio, 1.0, 300);
+        audio.play().catch(error => console.error(error));
       }
     }
 
     function reiniciarTemporizador() {
       clearInterval(temporizadorInterval);
-      detenerAudios(150);
+      detenerAudios();
       tiempoRestante = 0;
       minutosSeleccionados = 0;
       temporizadorActivo = false;
@@ -787,7 +750,7 @@
 
         if (!temporizadorActivo || enPausa) {
           barraNivel.style.width = '0%';
-          if (efectoActual) detenerAudios(150);
+          detenerAudios();
           if (!temporizadorActivo) {
             imgCerbero.src = imagenes.nivel1;
           }
@@ -803,11 +766,9 @@
           let sensibilidad = parseFloat(sliderSensibilidad.value);
           let volumenInstantaneo = Math.min(100, Math.round(((promedio * sensibilidad) / 128) * 100));
 
-          // 1. Suavizado del volumen
-          volumenSuave = volumenSuave * 0.7 + volumenInstantaneo * 0.3;
+          volumenSuave = volumenSuave * 0.85 + volumenInstantaneo * 0.15;
           barraNivel.style.width = Math.round(volumenSuave) + '%';
 
-          // 2. Cálculo del nivel según volumen
           let nivelDetectado = 1;
           if (volumenSuave >= 70) {
             nivelDetectado = 4;
@@ -819,7 +780,6 @@
 
           const ahora = Date.now();
 
-          // 3. Transición rápida al calmarse
           if (nivelDetectado > nivelActual) {
             nivelActual = nivelDetectado;
             tiempoUltimaAlerta = ahora;
@@ -831,17 +791,16 @@
             tiempoUltimaAlerta = ahora;
           }
 
-          // 4. Aplicar cambios de imagen y audio
           switch (nivelActual) {
             case 1:
               imgCerbero.src = imagenes.nivel1;
               barraNivel.style.backgroundColor = '#4caf50';
-              detenerAudios(150);
+              detenerAudios();
               break;
             case 2:
               imgCerbero.src = imagenes.nivel2;
               barraNivel.style.backgroundColor = '#ffeb3b';
-              detenerAudios(150);
+              detenerAudios();
               break;
             case 3:
               imgCerbero.src = imagenes.nivel3;
