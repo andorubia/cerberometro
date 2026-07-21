@@ -546,9 +546,13 @@
     const btnModalIniciar = document.getElementById('btn-modal-iniciar');
     const opcionesTiempo = document.querySelectorAll('.btn-opcion-tiempo');
 
-    // --- Carga de efectos de sonido ---
+    // --- Carga de efectos de sonido en bucle ---
     const audioGrunido = new Audio('grunido.mp3');
+    audioGrunido.loop = true;
+
     const audioLadrido = new Audio('ladrido.mp3');
+    audioLadrido.loop = true;
+
     let efectoActual = null;
 
     let temporizadorInterval = null;
