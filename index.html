@@ -549,7 +549,7 @@
     // --- Carga de efectos de sonido ---
     const audioGrunido = new Audio('grunido.mp3');
     const audioLadrido = new Audio('ladrido.mp3');
-    let efectoActual = null; // Guarda qué efecto está sonando
+    let efectoActual = null;
 
     let temporizadorInterval = null;
     let tiempoRestante = 0;
@@ -568,6 +568,12 @@
     let analyser;
     let microphone;
 
+    // --- Variables de suavizado e histéresis ---
+    let volumenSuave = 0;
+    let nivelActual = 1;
+    let tiempoUltimaAlerta = 0;
+    const TIEMPO_CALMA_MS = 1500; // Tiempo que tarda en calmarse (1.5 segundos)
+
     btnComenzar.addEventListener('click', async () => {
       pantallaInicio.style.display = 'none';
       pantallaJuego.style.display = 'block';
@@ -576,6 +582,11 @@
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
 
@@ -627,7 +638,6 @@
       temporizadorActivo = true;
       enPausa = false;
       btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
-      
       btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Nuevo objetivo';
 
       cajaRuido.style.display = 'flex';
@@ -676,7 +686,7 @@
       if (efectoActual !== audio) {
         detenerAudios();
         efectoActual = audio;
-        audio.play().catch(() => {}); // Evita bloqueos del navegador si falla la reproducción
+        audio.play().catch(error => console.error(error));
       }
     }
 
@@ -688,13 +698,13 @@
       temporizadorActivo = false;
       enPausa = false;
       
+      nivelActual = 1;
+      volumenSuave = 0;
       textoTiempo.textContent = '00:00';
       imgCerbero.src = imagenes.nivel1;
       barraNivel.style.width = '0%';
       btnDetener.innerHTML = '<img src="icono-pausa.png" alt="Pausa" class="icono-btn"> Detener';
-      
       btnFijarObjetivo.innerHTML = '<img src="icono-objetivo.png" alt="Objetivo" class="icono-btn"> Fijar objetivo';
-      
       cajaRuido.style.display = 'none';
 
       opcionesTiempo.forEach(b => b.classList.remove('activo'));
@@ -724,26 +734,58 @@
           let promedio = suma / dataArray.length;
           
           let sensibilidad = parseFloat(sliderSensibilidad.value);
-          let volumen = Math.min(100, Math.round(((promedio * sensibilidad) / 128) * 100));
+          let volumenInstantaneo = Math.min(100, Math.round(((promedio * sensibilidad) / 128) * 100));
 
-          barraNivel.style.width = volumen + '%';
+          // 1. Suavizado del volumen (amortigua picos breves)
+          volumenSuave = volumenSuave * 0.85 + volumenInstantaneo * 0.15;
+          barraNivel.style.width = Math.round(volumenSuave) + '%';
 
-          if (volumen < 20) {
-            imgCerbero.src = imagenes.nivel1;
-            barraNivel.style.backgroundColor = '#4caf50';
-            detenerAudios();
-          } else if (volumen < 45) {
-            imgCerbero.src = imagenes.nivel2;
-            barraNivel.style.backgroundColor = '#ffeb3b';
-            detenerAudios();
-          } else if (volumen < 70) {
-            imgCerbero.src = imagenes.nivel3;
-            barraNivel.style.backgroundColor = '#ff9800';
-            reproducirEfecto(audioGrunido);
+          // 2. Cálculo del nivel según volumen suavizado
+          let nivelDetectado = 1;
+          if (volumenSuave >= 70) {
+            nivelDetectado = 4;
+          } else if (volumenSuave >= 45) {
+            nivelDetectado = 3;
+          } else if (volumenSuave >= 20) {
+            nivelDetectado = 2;
+          }
+
+          const ahora = Date.now();
+
+          // 3. Histéresis: Sube de nivel al instante, pero espera antes de bajar
+          if (nivelDetectado > nivelActual) {
+            nivelActual = nivelDetectado;
+            tiempoUltimaAlerta = ahora;
+          } else if (nivelDetectado < nivelActual) {
+            if (ahora - tiempoUltimaAlerta > TIEMPO_CALMA_MS) {
+              nivelActual = nivelDetectado;
+            }
           } else {
-            imgCerbero.src = imagenes.nivel4;
-            barraNivel.style.backgroundColor = '#f44336';
-            reproducirEfecto(audioLadrido);
+            tiempoUltimaAlerta = ahora;
+          }
+
+          // 4. Aplicar cambios de imagen y audio según nivelActual
+          switch (nivelActual) {
+            case 1:
+              imgCerbero.src = imagenes.nivel1;
+              barraNivel.style.backgroundColor = '#4caf50';
+              detenerAudios();
+              break;
+            case 2:
+              imgCerbero.src = imagenes.nivel2;
+              barraNivel.style.backgroundColor = '#ffeb3b';
+              detenerAudios();
+              break;
+            case 3:
+              imgCerbero.src = imagenes.nivel3;
+              barraNivel.style.backgroundColor = '#ff9800';
+              reproducirEfecto(audioGrunido);
+              break;
+            case 4:
+              imgCerbero.src = imagenes.nivel4;
+              barraNivel.style.backgroundColor = '#f44336';
+              reproducirEfecto(audioLadrido);
+              break;
           }
         }
 
