@@ -446,7 +446,7 @@
       box-shadow: 0 0 35px rgba(64, 238, 254, 0.4);
       max-width: 650px;
       padding: 32px 36px;
-      gap: 24px; /* Separación uniforme entre elementos dentro del contenedor */
+      gap: 24px;
     }
 
     .modal-contenido-ofrenda .textos-ofrenda {
@@ -459,7 +459,7 @@
 
     .modal-contenido-ofrenda h2 {
       color: #40EEFE;
-      font-size: 34px; /* Título más grande */
+      font-size: 34px;
       line-height: 1.2;
       text-align: center;
       padding-right: 0;
@@ -468,7 +468,7 @@
 
     .modal-contenido-ofrenda p {
       text-align: center;
-      font-size: 18px; /* Texto descriptivo más grande */
+      font-size: 18px;
       line-height: 1.4;
       margin-bottom: 0;
     }
@@ -694,6 +694,10 @@
     let tiempoUltimaAlerta = 0;
     const TIEMPO_CALMA_MS = 1500;
 
+    // --- Control de permanencia en Nivel 4 ---
+    let tiempoInicioNivel4 = null;
+    const TIEMPO_REQUERIDO_NIVEL4_MS = 5000; // 5 segundos continuos
+
     btnComenzar.addEventListener('click', async () => {
       audioLobby.pause();
       audioLobby.currentTime = 0;
@@ -805,6 +809,7 @@
       estaBloqueadoPorOfrenda = false;
       nivelActual = 1;
       volumenSuave = 0;
+      tiempoInicioNivel4 = null;
       imgCerbero.src = imagenes.nivel1;
       barraNivel.style.backgroundColor = '#4caf50';
       barraNivel.style.width = '0%';
@@ -839,6 +844,7 @@
       
       nivelActual = 1;
       volumenSuave = 0;
+      tiempoInicioNivel4 = null;
       textoTiempo.textContent = '00:00';
       imgCerbero.src = imagenes.nivel1;
       barraNivel.style.width = '0%';
@@ -865,6 +871,7 @@
         if (!temporizadorActivo || enPausa) {
           barraNivel.style.width = '0%';
           detenerAudios();
+          tiempoInicioNivel4 = null;
           if (!temporizadorActivo) {
             imgCerbero.src = imagenes.nivel1;
           }
@@ -905,6 +912,11 @@
             tiempoUltimaAlerta = ahora;
           }
 
+          // Reiniciar el cronómetro de Nivel 4 si se baja de nivel
+          if (nivelActual < 4) {
+            tiempoInicioNivel4 = null;
+          }
+
           switch (nivelActual) {
             case 1:
               imgCerbero.src = imagenes.nivel1;
@@ -926,9 +938,17 @@
               barraNivel.style.backgroundColor = '#f44336';
               reproducirEfecto(audioLadrido);
               
-              // ¡SALIÓ CERBERO 4! Desplegar pestaña de ofrenda
-              estaBloqueadoPorOfrenda = true;
-              modalOfrenda.style.display = 'flex';
+              // Iniciar la cuenta si entra al Nivel 4 por primera vez
+              if (!tiempoInicioNivel4) {
+                tiempoInicioNivel4 = ahora;
+              }
+
+              // Si ha transcurrido 5 segundos seguidos en Nivel 4, se activa la ofrenda
+              if (ahora - tiempoInicioNivel4 >= TIEMPO_REQUERIDO_NIVEL4_MS) {
+                tiempoInicioNivel4 = null;
+                estaBloqueadoPorOfrenda = true;
+                modalOfrenda.style.display = 'flex';
+              }
               break;
           }
         }
